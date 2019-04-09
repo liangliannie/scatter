@@ -40,11 +40,13 @@ def preprocess(input_img, target_img, train=False):
     #         target_img[idx] = target_img[idx] #+  torch.abs(torch.randn(input_img[idx].shape).cuda())*input_img[idx].mean()
 
     for idx in range(len(input_img)):
-        mean_input = 0
-        max_input = 0
+        mean_input = input_img[idx].mean()
+        max_input = input_img[idx].std() + 1e-8
         Scale_Means.append((mean_input, max_input))
-        input_img[idx] = input_img[idx] / (input_img[idx].max())
-        target_img[idx] = target_img[idx] / (target_img[idx].max())
+        input_img[idx] = (input_img[idx] - mean_input) / max_input
+        target_img[idx] = target_img[idx] / 0.01 #target_img[idx].max()
+        # print(target_img[idx].max())
+        # print(target_img[idx].max(), target_img[idx].min())
 
     return Scale_Means, input_img, target_img
 

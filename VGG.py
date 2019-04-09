@@ -24,6 +24,7 @@ class VGG(nn.Module):
     def __init__(self, features, num_classes=64*520, init_weights=True):
         super(VGG, self).__init__()
         self.features = features
+        self.softplus = torch.nn.Softplus(3)
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier = nn.Sequential(
             nn.Linear(512*7*7, 4096),
@@ -43,7 +44,9 @@ class VGG(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         x = x.view(-1, 1, 64, 520)
-        x = torch.sigmoid(x)
+        # x = torch.nn.functional.relu(x)
+        x = self.softplus(x)
+        # x = torch.sigmoid(x)
         return x
 
     def _initialize_weights(self):
