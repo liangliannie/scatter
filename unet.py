@@ -15,6 +15,7 @@ from pytorch_msssim import MSSSIM
 # # import sparseconvnet as scn
 # import framelet
 # import Nets
+import GoogleNet
 # import test2
 import VGG
 
@@ -155,7 +156,8 @@ class Sino_repair_net():
         self.model_num = 0
         # self.network = UNet(opts)
         # self.network = test2.Net(opts)
-        self.network = VGG.vgg19_bn()
+        # self.network = VGG.vgg11_bn()
+        self.network = GoogleNet.GoogLeNet()
         # self.network = framelet.Framelets()
         # import VGG
         # self.network = VGG.vgg19_bn()
@@ -255,8 +257,10 @@ class Sino_repair_net():
         l1 = loss1.detach()
 
         # # # Including a consistency loss
-        loss2 = (1 - self.mssim_loss.forward(output, target_img))/2
+        loss2 = (1 - self.mssim_loss.forward(output, target_img))/2.0
         l2 = loss2.detach()
+
+        loss3 = self.loss_func_MSE(output, target_img)
 
         # loss3 = self.loss_func_MSE(output, target_img)
         #
@@ -278,8 +282,8 @@ class Sino_repair_net():
         # loss_pearson_correlation = 1 - torch.sum(vx * vy) / (
         #             torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2)))  # use Pearson correlation
 
-        loss = loss1 #+ loss2
-        # loss = loss1s
+        loss = loss3 # + loss3
+        # loss = loss1
         # loss = loss + filter_loss
         self.optimizer.zero_grad()
 

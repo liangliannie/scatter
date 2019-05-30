@@ -44,7 +44,9 @@ def preprocess(input_img, target_img, train=False):
         max_input = input_img[idx].std() + 1e-8
         Scale_Means.append((mean_input, max_input))
         input_img[idx] = (input_img[idx] - mean_input) / max_input
-        target_img[idx] = target_img[idx] / 0.01 #target_img[idx].max()
+        # target_img[idx] = target_img[idx] / 0.01
+
+        target_img[idx] = target_img[idx] /(target_img[idx].max() + 1e-8) # + 0.01)
         # print(target_img[idx].max())
         # print(target_img[idx].max(), target_img[idx].min())
 
@@ -328,7 +330,7 @@ class Network_Trainer():
             showchannel = 3
 
         images = np.stack(
-            (target_img[:showchannel], input_sino[:showchannel], output[:showchannel], final_img[:showchannel],
+            (input_sino[:showchannel], target_img[:showchannel], output[:showchannel], final_img[:showchannel],
              diff_img[:showchannel]), axis=0)
 
         if not istest:

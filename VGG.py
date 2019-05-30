@@ -27,13 +27,16 @@ class VGG(nn.Module):
         self.softplus = torch.nn.Softplus(3)
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier = nn.Sequential(
-            nn.Linear(512*7*7, 4096),
+            nn.Linear(512*7*7, 5120, bias=True),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 4096),
+            nn.Linear(5120, 4096, bias=True),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, num_classes),
+            nn.Linear(4096, 5120, bias=True),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(5120, num_classes, bias=True),
         )
         if init_weights:
             self._initialize_weights()
@@ -45,8 +48,8 @@ class VGG(nn.Module):
         x = self.classifier(x)
         x = x.view(-1, 1, 64, 520)
         # x = torch.nn.functional.relu(x)
-        x = self.softplus(x)
-        # x = torch.sigmoid(x)
+        # x = self.softplus(x)
+        x = torch.sigmoid(x)
         return x
 
     def _initialize_weights(self):
